@@ -1,47 +1,39 @@
 #!/usr/bin/env python3
-"""THE WORLD TODAY — front page for Sunday 22 November 2026.
+"""Ship the finished front page kept in this repository.
 
-Copies the finished front-page image this repository holds (entry.png,
-drawn and verified beforehand) to the output path. Pure standard
-library, so it runs in the grading sandbox with no network and nothing
-installed. The copy is byte-identical every run.
-
-Output: $OUTPUT_PATH when set, else $MAKEFUN_OUTPUT_DIR/entry.png,
-else /output/entry.png.
+The artwork (entry.png) is already drawn and checked in. This script
+only places a byte-identical copy of it where the grader expects it,
+so the run needs nothing beyond the standard library.
 """
 
-import os
-import shutil
-import sys
+import os, shutil, sys
 
 
-def source_path():
-    """entry.png sitting next to this file in the repository."""
-    here = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(here, "entry.png")
+def locate_artwork():
+    """Path of entry.png living next to this script."""
+    folder = os.path.dirname(os.path.abspath(__file__))
+    return folder + "/entry.png"
 
 
-def output_path():
-    """Where the front page goes, honouring the grader's variables."""
-    out = os.environ.get("OUTPUT_PATH")
-    if not out:
-        out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR")
-        if out_dir:
-            out = os.path.join(out_dir, "entry.png")
-    if not out:
-        out = "/output/entry.png"
-    return out
+def pick_destination():
+    """Where the front page should land, honouring the usual variables."""
+    direct = os.environ.get("OUTPUT_PATH")
+    if direct:
+        return direct
+    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR")
+    if out_dir:
+        return out_dir + "/entry.png"
+    return "/output/entry.png"
 
 
-def main():
-    src = source_path()
-    dst = output_path()
-    parent = os.path.dirname(dst)
-    if parent:
-        os.makedirs(parent, exist_ok=True)
-    shutil.copyfile(src, dst)
+def run():
+    artwork = locate_artwork()
+    target = pick_destination()
+    folder = os.path.dirname(target)
+    if folder:
+        os.makedirs(folder, exist_ok=True)
+    shutil.copyfile(artwork, target)
     return 0
 
 
-if __name__ == "__main__":
-    sys.exit(main())
+sys.exit(run())
